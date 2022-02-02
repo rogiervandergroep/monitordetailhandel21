@@ -1,0 +1,479 @@
+---
+title: 'Monitor Detailhandel 2020 2021 - Koopkrachtbinding en koopkrachtafvloeiing'
+author: ''
+date: ''
+output:
+  html_document:
+    css: css/styles.css
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+
+#structureel uitzetten van warnings
+knitr::opts_chunk$set(echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE, 
+                      dev.args=list(bg="transparent"))
+              
+
+library(knitr)
+library(kableExtra)
+
+
+
+invisible(lapply(list.files('G:/OIS/Internezaken/Techniek/R_huisstijl/ggtheme.ois/R', full.names = T), source))
+
+
+invisible(lapply(list.files('scripts consumentenenquete/scripts Monitor Deel 0 Basis', full.names = T), source))
+
+
+invisible(lapply(list.files('scripts consumentenenquete/scripts Monitor Deel 1 conseng', full.names = T), source))
+
+
+
+
+```
+
+
+# Inleiding en samenvatting
+
+
+In deze rapportage wordt ten eerste het koopgedrag van Amsterdammers en daarvan afgeleid, de koopkrachtbinding en koopkrachtafvloeiing besproken en ten tweede de mate van waardering over winkelgebieden aan de hand van rapportcijfers.
+
+
+Het koopgedrag wordt in kaart gebracht aan de hand van de begrippen koopkrachtbinding en koopkrachtafvloeiing. Koopkrachtbinding is het aandeel van de bewoners dat in de eigen woonbuurt, -wijk of -stadsdeel boodschappen doet of winkelt. Koopkrachtafvloeiing is het aandeel dat elders winkelt of online bestelt. De data is afkomstig van de consumentenenquete, een tweejaarlijks surveyonderzoek onder Amsterdammers. Het oordeel en de mate van tevredenheid over de winkelgebieden is eveneens berekend op basis van de uitkomsten van dit surveyonderzoek.^[Koopkrachtbindingscijfers worden berekend op basis van een surveyonderzoek onder Amsterdammers en bewoners uit de Metropoolregio Amsterdam. In dit onderzoek is gevraagd waar Amsterdammers voor het laatst dagelijkse boodschappen en niet-dagelijkse producten kopen De veldwerkverzameling voor dit onderzoek vond plaats tussen september 2020 (na de eerste lockdown) en mei 2021. In deze periode zijn tijdens vijf kleinere veldwerktranches 4.300 Amsterdammers geinterviewd, evenredig verdeeld over 100 wijken in Amsterdam. De data van dit onderzoek is vergeleken met de bevindingen van het vorige onderzoek '2019-2020' (waarvan het veldwerk van februari 2019 tot begin maart 2020 liep). Toen zijn er 4.500 Amsterdammers geinterviewd. De bevindingen van die dataset weerspiegelen dus de koopsituatie van voor de coronacrisis.] Uit het onderzoek blijkt dat:
+
+ - Koopkrachtbinding in het dagelijkse boodschappensegment (waaronder levensmiddelen) is gedaald van 94% (meting voorjaar 2020 voordat de eerste lockdownperiode in ging) naar 90% in mei 2021 (na afloop van de tweede lockdownperiode)
+ - Koopkrachtbinding in het niet-dagelijkse productensegment (waaronder kleding) is gedaald van 63% in januari 2020 naar 50% in mei 2021.
+ 
+ - Online-bestedingen zijn in deze periode het dagelijkse boodschappensegment gestegen van 3% naar 6%.
+ - Online-bestedingen zijn in deze periode het niet-dagelijkse productensegment gestegen van 27% naar 42%.
+
+
+
+# Ontwikkeling koopgedrag 2020 2021
+
+Uit het surveyonderzoek en uit voorgaande onderzoeken blijkt dat koopkrachtafvloeiing als gevolg van aankopen via internet verder toeneemt. De coronacrisis heeft deze ontwikkeling versterkt.
+
+
+
+```{r}
+
+
+#tabel 1: KKB Amsterdam DG en NDG
+kbl((select(kkb_totaal2, - periode)), caption = "Tabel 1 Koopkrachtbinding en afvloeiing Amsterdam 2019 - 2021") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  row_spec(0, color="white", background ="#00A0E6")%>%
+  pack_rows("feb. 2019 - mrt. 2020", 1, 3) %>%
+  pack_rows("sep. 2020 - mei. 2021", 4, 6)
+
+
+
+```
+
+<br>
+
+*Amsterdammers kopen meer dagelijkse boodschappen online*
+
+De koopkrachtbinding van dagelijkse boodschappen is in Amsterdam gedaald van `r kkb_totaal2 [1,3]`%  naar `r kkb_totaal2 [4,3]`%. 
+Dit komt omdat een groter deel van de Amsterdammers de boodschappen online bestelt. Het aandeel Amsterdammers dat online dagelijkse boodschappen koopt, is gestegen van `r kkb_totaal2[3,3]`%  naar `r kkb_totaal2 [6,3]`%. 
+
+*Aandeel dat online winkelt gestegen*
+
+Het aandeel Amsterdammers dat niet-dagelijkse producten in een fysieke winkel in Amsterdam heeft gekocht is gedaald van `r kkb_totaal2[1,4]`% naar `r kkb_totaal2[4,4]`%. Hier staat tegenover dat het aandeel dat online niet-dagelijkse boodschappen besteld heeft juist gestegen is van `r kkb_totaal2[3,4]`% naar `r kkb_totaal2[6,4]`%.
+
+<br>
+
+```{r kkb dagelijks niet dagelijks }
+
+
+
+plot <- fig5a+
+  ggtitle("fig 1 Koopkrachtbinding dagelijkse boodschappen en niet-dagelijkse producten Amsterdam 2019-2021")
+
+
+fun_giraf(plot)
+
+
+```
+
+
+*Winkelverkoop daalt sterk, maar veert ook licht op*
+
+Hieronder is aangegeven hoe de koopkracht zich ontwikkeld heeft tussen 2019 en 2021 op basis van de verschillende tussentijdse veldwerkperioden. De eerste lockdown werd ingesteld tussen april 2020 en juli 2020. De tweede lockdown werd ingesteld in januari 2021 en februari 2021. In die perioden is er geen velkdwerk gedaan. Na opheffing van de lockdowns is het veldwerk weer opgepakt. Op dat moment is de onlineverkoop zeer groot (53%), maar in de periode daarna lijkt het online-aandeel weer licht te dalen tot 43% en neemt juist het koopkrachtbindingsaandeel in fysieke winkels weer toe. 
+
+
+
+```{r  kkb per tranche}
+
+
+plot <- fig_veldwerk+
+  ggtitle("fig. 2 Koopkrachtbinding en afvloeiing per veldwerkperiode")
+
+
+fun_giraf(plot)
+
+
+```
+
+
+# Koopkrachtbinding nader bekeken
+
+In dit deel wordt de koopkrachtbinding per stadsdeel nader bestudeerd. De binding met het eigen stadsdeel is in Centrum het grootst. Dit is niet verwonderlijk, aangezien  hier het grootste en belangrijkste winkelgebied (het kernwinkelgebied) van de stad is. Vervolgens kijken we naar de koopkrachtbinding per productgroep. Zo worden bijvoorbeeld bloemen en planten 'om de hoek' of op z'n minst in het eigen stadsdeel gekocht en electronica wat vaker online. Tenslotte richten we ons op de mate van koopkrachtbinding tussen verschillende groepen Amsterdammers. Zo blijkt bijvoorbeeld dat jonge Amsterdammers vaker online producten kopen dan oudere Amsterdammers.
+
+
+## per stadsdeel {.tabset .tabset-fade .tabset-pills}
+
+*koopkrachtbinding dagelijkse boodschappen Zuidoost gedaald*
+
+Het aandeel inwoners dat in het afgelopen jaar in het eigen stadsdeel de boodschappen doet, schommelt tussen de 69% (Zuidoost) en 82% (Noord). In alle stadsdelen (met uitzondering van stadsdeel Centrum) is de koopkrachtbinding voor dagelijkse boodschappen gedaald. Hier staat tegenover dat het aandeel dat online dat de boodschappen online heeft aangeschaft juist is gestegen. Het lage aandeel in Zuidoost wordt deels verklaard doordat een substantieel deel van de inwoners ook elders de boodschappen doet, bijvoorbeeld in Diemen, Stadsdeel Zuid (waaronder Buitenveldert) of Overamstel.
+
+*lockdownmaatregelen versterken dalende trend koopkrachtbinding*
+
+Het aandeel inwoners dat het afgelopen jaar in het eigen stadsdeel niet-dagelijkse producten heeft gekocht schommelt tussen de 23% (Oost) en 41% (Centrum).Ten opzichte van de vorige meting is er sprake van een sterke daling die samenhangt met de coronacrisis en de lock-down maatregelen. Hier dient bij opgemerkt te worden dat de trend van de afgelopen vijftien jaar (meer online, minder fysiek) niet veranderd is.
+
+
+
+```{r}
+
+#tabel 3: KKB Amsterdam DG en NDG
+kbl(select(kkb_sd_filter2,-periode), caption = "Tabel 3 Koopkrachtbinding per stadsdeel 2019 - 2021") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  row_spec(0, color="white", background ="#00A0E6")%>%
+  pack_rows("feb. 2019 - mrt. 2020", 1, 7) %>%
+  pack_rows("sep. 2020 - mei. 2021", 8, 14)
+
+```
+
+### Binding dagelijkse boodschappen
+
+*Aandeel dat online boodschappen doet stijgt hard in Zuidoost*
+
+In de figuren hieronder is ook de koopkrachtafvloeiing weergegeven per stadsdeel. Het aandeel dat online boodschappen doet is onder andere gestegen in Noord en Zuidoost.
+
+```{r,  kkb dagelijks per sd}
+
+
+
+plot <- fig7a+
+  ggtitle("fig. 4a Koopkrachtbinding en afvloeiing dagelijkse boodschappen per stadsdeel")
+
+
+fun_giraf(plot)
+
+```
+
+### Binding niet-dagelijkse producten
+
+*Aandeel dat online niet-dagelijkse producten koopt is in alle stadsdelen gestegen*
+
+Het aandeel dat online niet-dagelijkse producten aanschaft, is in alle stadsdelen gestegen, dit ten koste van de binding met het eigen stadsdeel, met overig Amsterdam en met de mate van afvloeiing naar de regio.
+
+```{r kkb niet dagelijks sd}
+
+
+
+plot <- fig7b+
+  ggtitle("fig. 4b Koopkrachtbinding en afvloeiing niet-dagelijkse producten per stadsdeel")
+
+
+fun_giraf(plot)
+```
+
+## Binding per productgroep
+
+*Minder modeartikelen in Centrum gekocht*
+
+Zoals eerder vermeld worden modeartikelen vaak in stadsdeel Centrum gekocht. Door de lockdownmaatregelen is het aandeel dat in Centrum modeartikelen heeft gekocht gedaald van 31% naar 23%. Het aandeel Amsterdammers dat modeartikelen online heeft gekocht is juist gestegen van 25% naar 43%. Maar andere producten zoals elektronica, media-gerelateerde artikelen en sportartikelen zijn ook fors meer online gekocht. Zelfs doe-het-zelf-artikelen en bloemen en planten (twee type producten die normaliter in fysieke winkels worden gekocht) worden meer online gekocht dan in voorgaande jaren.
+
+```{r}
+
+
+plot<- fig_ndg +
+  ggtitle ("fig. 5 Koopkrachtbinding niet dagelijkse producten")
+
+
+fun_giraf(plot)
+
+
+```
+
+## koopkrachtbinding tussen verschillende groepen Amsterdammers  {.tabset .tabset-fade .tabset-pills}
+
+*Hoe hoger opgeleid en hoe jonger, hoe meer online*
+
+Het koopgedrag wordt ook  beinvloed door achtergrondkenmerken als leeftijd, opleiding en inkomen. Hieronder zijn drie voorbeelden gegeven. Hoe hoger opgeleid hoe meer producten er online zijn aangeschaft én hoe meer ook in Centrum is uitgegeven. Dit gold vooral 2019. In het coronajaar was er tussen de groepen nog steeds een duidelijk patroon zichtbaar met betrekking tot online verkoop, maar niet richting Centrum.
+
+
+### leeftijd
+
+
+```{r}
+
+
+#fig6a naar leeft
+
+
+plot <- fig_lft+
+  ggtitle ("fig.6a koopkrachtbinding tussen leeftijdsgroepen")
+
+
+fun_giraf(plot)
+
+
+```
+
+
+### opleiding
+
+
+```{r}
+
+#fig6b naar opleiding
+
+
+plot <- fig_opl+
+  ggtitle ("fig. 6b koopkrachtbinding tussen opleidingsniveau-groepen")
+
+
+fun_giraf(plot)
+
+
+
+```
+
+
+### inkomen
+
+```{r}
+
+#fig6c naar inkomen
+
+
+plot <- fig_ink+
+  ggtitle ("fig. 6c koopkrachtbinding tussen inkomensgroepen")
+
+
+fun_giraf(plot)
+
+
+```
+
+## Koopkrachtbinding per gebied {.tabset .tabset-fade .tabset-pills}
+
+*Elk winkelgebied zijn eigen verzorgingsgebied*
+
+Hieronder is de koopkrachtbinding en afvloeiing per gebied weergegeven voor niet-dagelijkse producten, met een minimale bindings- of afvloeiingsaandeel van 10%. Het wordt dan duidelijk dat bewoners uit Centrum-Oost voornamelijk winkelen in het westelijk deel van Centrum. Ook valt op dat Centrum-West als aankooplocatie met name bezocht wordt door bewoners uit Centrum en delen van West, Oost en Zuid rondom Centrum.
+
+Verder laat deze data zien dat de grotere winkelcentra buiten het Centrum (zoals Osdorpplein, Het Buikslotermeerplein, Amsterdamse Poort) een 'eigen' verzorgingsgebied vertegenwoordigen. Zo gaan bewoners uit De Aker, Sloten, Nieuw-Sloten en Slotervaart voornamelijk naar Osdorp. Het winkelgebied in Oud-Oost wordt vooral bezocht door bewoners uit Oost en in Noord gaan bewoners naar Noord-Oost, waar winkelcentrum Boven 't Y (Buikslotermeerplein) ligt.
+
+Er is ook een duidelijk verschil te zien tussen de koopstromen wanneer er ingezoomd op productgroepen. Bij woning- en interieurartikelen valt de toestroom vanuit de andere gebieden naar Bijlmer-Centrum op, terwijl huishoudelijke artikelen vooral in het eigen gebied gekocht worden. 
+
+
+### niet-dagelijks 2019-20
+
+```{r}
+
+
+s20
+
+
+```
+
+### niet-dagelijks 2020-21
+
+```{r}
+
+
+
+s21
+
+
+
+```
+
+### Mode, kleding
+
+```{r}
+
+
+
+s21_mode
+
+
+
+```
+
+### Huishoudelijke atikelen
+
+```{r}
+
+
+s21_HH
+
+
+
+
+```
+
+### Woon- en interieurartikelen
+
+```{r}
+
+
+s21_won
+
+
+```
+
+### Doe-het-zelfzaken
+
+```{r}
+
+
+s21_dhz
+
+
+```
+
+
+
+# rapportcijfers winkelgebieden {.tabset .tabset-fade .tabset-pills}
+
+In de consumentenenquete is gevraagd de winkelgebieden waar men normaliter de boodschappen doet, te beoordelen op de volgende aspecten
+
+ - algemeen oordeel
+ - sfeer en gezelligheid
+ - service en bediening
+ - keuzemogelijkheden food
+ - keuzemogelijkheden non-food
+ - prijsniveau
+ - veiligheid
+ - parkeermogelijkheden fiets
+ - parkeermogelijkheden auto
+ - aanbod daghoreca
+ - algemene bereikbaarheid
+ 
+*Gelderlandplein best beoordeelde winkelgebied*
+
+Al meerdere jaren wordt het Gelderlandplein beoordeeld als beste winkelgebied, ook de Albert Cuypstraat en Javastraat stonden al eerder in de top 5. 
+
+Het is opvallend dat een aantal gebieden in Zuid (waaronder Rijnstraat, Cornelis Troostplein en Olympiaplein) minder goed gewaardeerd worden dan in voorgaande jaren. 
+Dappermarkt en Bilderdijkstraat worden juist beter gewaardeerd dan voorheen.
+
+*Lambertus Zijlplein minst beoordeelde winkelgebied*
+
+Het Lambertus Zijlplein, Buikslotermeerplein en Delflandplein worden het minst beoordeeld door Amsterdammmers. 
+Deze gebieden scoren onder andere laag op sfeer, aanbod non-food en veiligheid.
+
+## Best beoordeelde winkelgebieden
+
+```{r}
+
+#tabel 7a Best beoordeelde winkelgebieden
+kbl(rap21_t20, caption = "Tabel 7a 20 best beoordeelde winkelgebieden 2019 2020") %>%
+  row_spec(0, color="white", background ="#00A0E6")%>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+
+```
+
+## Minst beoordeelde winkelgebieden
+
+```{r}
+
+#tabel 7b Minst beoordeelde winkelgebieden
+kbl(rap21_m20, caption = "Tabel 7b 20 minst beoordeelde winkelgebieden 2019 2020") %>%
+  row_spec(0, color="white", background ="#00A0E6")%>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+
+```
+
+
+## Rapportcijfers per stadsdeel{.tabset .tabset-fade .tabset-pills}
+
+
+Hieronder zijn alle rapportcijfers van alle winkelgebieden met meer dan 20 respondenten per stadsdeel weergegeven. Soms ontbreekt er een kolom: Dan hebben te weinig respondenten in dat jaar rapportcijfers gegeven.
+
+
+### Centrum
+
+
+```{r}
+
+gem_rap_20_21 %>%
+  functie_rap("A", "tabel 8 rapportcijfers winkelgebieden in Centrum")
+  
+
+```
+
+### West
+
+```{r}
+gem_rap_20_21 %>%
+  functie_rap("E", "tabel 8 rapportcijfers winkelgebieden in West")
+  
+
+```
+
+### Nieuw-West
+
+```{r}
+gem_rap_20_21 %>%
+  functie_rap("F", "tabel 8 rapportcijfers winkelgebieden in Nieuw-West")
+  
+
+```
+
+### Zuid
+
+```{r}
+
+gem_rap_20_21 %>%
+  functie_rap("K", "tabel 8 rapportcijfers winkelgebieden in Zuid")
+  
+```
+
+### Oost
+
+```{r}
+
+gem_rap_20_21 %>%
+  functie_rap("M", "tabel 8 rapportcijfers winkelgebieden in Oost")
+  
+
+```
+
+### Noord
+
+```{r}
+
+gem_rap_20_21 %>%
+  functie_rap("N", "tabel 8rapportcijfers winkelgebieden in Noord")
+  
+```
+
+### Zuidoost
+
+```{r}
+
+gem_rap_20_21 %>%
+  functie_rap("T", "tabel 8 rapportcijfers winkelgebieden in Zuidoost")
+  
+```
+
+# colofon
+
+Deze rapportage is gemaakt door<br>
+Rogier van der Groep<br>
+Onderzoek, Informatie en Statistiek<br>
+Gemeente Amsterdam<br>
+<rogier.van.der.groep@amsterdam.nl><br>
+Website [Data Amsterdam Detailhandel](https://onderzoek.amsterdam.nl/artikel/monitor-detailhandel).
+
+
+
+
