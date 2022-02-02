@@ -1,0 +1,262 @@
+---
+title: 'Monitor Detailhandel 2020 2021 - Ontwikkeling verkooppunten'
+author: ''
+date: ''
+output:
+  html_document:
+    css: css/styles.css
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+
+
+#structureel uitzetten van warnings
+knitr::opts_chunk$set(echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE, 
+                      dev.args=list(bg="transparent"))
+              
+
+library(knitr)
+library(kableExtra)
+
+
+
+lapply(list.files('scripts Monitor Deel 0 Basis', full.names = T), source)
+
+lapply(list.files('scripts Monitor Deel 1 Locatus', full.names = T), source)
+
+
+
+
+
+```
+
+
+# Inleiding en samenvatting
+
+De ontwikkeling van de detailhandel wordt in kaart gebracht aan de hand van een databestand van Locatus met geobserveerde verkooppunten in Amsterdam. In deze dataset is onderscheid gemaakt tussen verschillende branches, waarbij het mogelijk is om de ontwikkeling van de detailhandel te vergelijken met andere typen verkooppunten, waaronder horeca en dienstverleners als kappers en fietsenmakers. Achtergrondinformatie over de verzamelingsmethodiek is te vinden op de website van Locatus [Website Locatus](https://locatus.com/).
+
+De belangrijkste bevindingen uit dit deel van de Monitor Detailhandel 2021 zijn de volgende:
+
+ - Op 1 januari 2022 telt Amsterdam 5.352 detailhandelverkooppunten, een daling van 2% ten opzichte van 1 januari 2021
+ - De winkelvloeroppervlakte van deze verkooppunten is 503.394 m2, dit is vrijwel gelijk aan het totale winkelvloeroppervlak van 2021
+ - Over een langere periode (tussen 2017 en 2022) zien we dat het aantal winkelverkooppunten daalt, maar dat andere typen verkooppunten, zoals horecaverkooppunten, juist toenemen
+ - De  winkelleegstand is tussen 2017 en 2021 toegenomen van 3,6% tot 6,3% in 2021 en is daarna weer gedaald tot 6,0% in 2022.
+
+
+# Ontwikkeling verkooppunten 
+
+Als  gevolg van de coronacrisis daalde het aantal winkelverkooppunten in Amsterdam met 10% van 5.939 in jan. 2016 tot 5.352 in jan. 2022. Het aantal horeca en cultuur-vestigingen stijgt juist: in 2016 waren dit er 4.817 en in 2021 5.445. Het aantal verkooppunten in de categorie diensten (waaronder wasserettes, kledingherstelzaken en kappers) blijft stabiel.
+
+  
+```{r}
+
+#tabel 1a: Ontwikkeling vestigingen Amsterdam 2017 - 2022 
+
+tab_ams_ves_AMS <- tab_ams_ves %>% 
+  filter(GEMEENTE == "Amsterdam")%>% 
+  select (-(GEMEENTE))
+
+
+tab_ams_ves_AMS$winkelleegstand<-round(tab_ams_ves_AMS$winkelleegstand,0) 
+tab_ams_ves_AMS$aandeel_winkelleegstand<-round(tab_ams_ves_AMS$aandeel_winkelleegstand,1)
+
+
+tab_ams_ves_AMS <- tab_ams_ves_AMS %>% 
+  rename("aandeel winkelleegstand (%)"=aandeel_winkelleegstand)
+
+
+
+tabel <- tab_ams_ves_AMS %>% 
+  ois_tabel("Tabel 1a Ontwikkkeling detailhandel 2016 - 2022 Amsterdam (aantal verkooppunten)", 
+            "ijkpunt van elk jaar is 1 januari; voor 2022 gaat het om voorlopige cijfers; bron: Locatus")%>%
+  column_spec(5, bold = T)
+
+
+
+tabel
+
+
+```
+
+
+# Ontwikkeling winkelvloeroppervlakte
+
+In 2022 bedraagt het winkelvloeroppervlak in Amsterdam 1,1 miljoen m2. De winkelvloeroppervlakte van winkels in het dagelijkse boodschappensegment is wel gestegen, namelijk met 16%. De winkelvloeroppervlakte in het mode & luxe-segment is juist gedaald (-9%). Tot 2020 is er met Locatus-data onvoldoende zicht op de vloeroppervlakte in het horeca, cultuur en dienstensegment.
+
+
+```{r}
+
+#tabel 1b: ontwikkeling oppervlakte winkelvloeroppervlakte 2017 - 2022 
+
+
+tabel <- tab_ams_opp %>% 
+  filter(GEMEENTE == "Amsterdam")%>% 
+  select (-c("GEMEENTE", "horeca en cultuur", "diensten"))%>%
+   mutate(across(where(is.numeric), ~replace(., is.na(.), 0)))
+
+
+tabel$winkelleegstand<-round(tabel$winkelleegstand,0) 
+tabel$aandeel_winkelleegstand<-round(tabel$aandeel_winkelleegstand,1) 
+
+
+
+tabel <- tabel %>% 
+  ois_tabel("Tabel 1b Ontwikkkeling detailhandel 2016 - 2022 Amsterdam (WVO m2)", 
+            "ijkpunt van elk jaar is 1 januari; voor 2022 gaat het om voorlopige cijfers; bron: Locatus")%>%
+  column_spec(5, bold = T)
+
+
+
+tabel
+
+
+
+```
+
+# Verkooppunten en vloeroppervlakte per stadsdeel
+
+Het aantal verkooppunten verschilt sterk per stadsdeel. Zo zijn in Noord en Zuidoost minder winkels voor dagelijkse boodschappen te vinden dan in Centrum en Zuid. In deze twee stadsdelen zijn ook de meeste winkels gevestigd met betrekking tot mode en luxe. Het winkelvloeroppervlak steekt in aantallen vierkante meters in Centrum boven de andere stadsdelen uit. De winkelvloeroppervlakte van 'overige detailhandel' is juist groot in Zuidoost en Nieuw-West vanwege de concentratie van doe-het-zelfzaken en woon- en interieurzaken op bijvoorbeeld perifere detailhandelslocaties.
+
+
+```{r}
+
+#tabel 2a: Vestigingen 2022 per stadsdeel 
+
+
+tabel <- tab_sd_ves %>% 
+  filter(JAAR == "2022")%>% 
+  select (-c("JAAR", "GEMEENTE"))%>%
+  mutate(across(where(is.numeric), ~replace(., is.na(.), 0)))
+
+tabel$winkelleegstand         <- round(tabel$winkelleegstand,0) 
+tabel$aandeel_winkelleegstand <- round(tabel$aandeel_winkelleegstand,1) 
+
+
+
+tabel2 <- tabel %>% 
+  ois_tabel("Tabel 2a Verkooppunten per stadsdeel 2022", 
+            "voorlopige cijfers; bron: Locatus")
+
+
+
+tabel2
+
+```
+
+
+
+
+```{r}
+
+#tabel 2b: Oppervlakte 2022 per stadsdeel 
+
+
+tabel <- tab_sd_opp %>% 
+  filter(JAAR == "2022")%>% 
+  select (-c("JAAR", "GEMEENTE"))%>%
+  mutate(across(where(is.numeric), ~replace(., is.na(.), 0)))
+
+tabel$winkelleegstand         <- round(tabel$winkelleegstand,0) 
+tabel$aandeel_winkelleegstand <- round(tabel$aandeel_winkelleegstand,1) 
+
+
+
+tabel2 <- tabel %>% 
+  ois_tabel("Tabel 2b Verkooppunten per stadsdeel, 2022 (WVO m2)", 
+            "voorlopige cijfers; bron: Locatus")
+
+
+
+tabel2
+
+```
+
+
+
+## Ontwikkeling per stadsdeel
+
+De gevolgen van de coronacrisis zijn duidelijk terug te zien in onderstaande lijnfiguren. Tussen 2020 en 2021 daalde het aantal vestigingen in de branche 'mode en luxe' met 10% in stadsdeel Centrum, met 11% in West en met 7% in Zuid. Tussen 2021 en 2022 nam het aantal vestigingen in deze branche nog steeds af, maar minder sterk dan het jaar ervoor. 
+
+De leegstandsontwikkeling laat een tegengesteld patroon zien: In Centrum nam de leegstand (nog voor de coronacrisis) scherp toe. Deze stijging moet toegeschreven worden aan het plotselinge vertrek van Hudson Bay aan het Rokin. West, Nieuw-West en Zuid laten flinke leegstandsstijgingen zien tussen 2020 en 2021.
+
+
+### verkooppunten per stadsdeel
+
+```{r}
+
+# lijndiagram groeipercentages 
+
+plot <- lijnplot_det+
+ ggtitle("Figuur 3a Ontwikkeling verkooppunten per stadsdeel, 2018 - 2022 (%)")
+
+ fun_giraf(plot)
+
+
+```
+
+### leegstand per stadsdeel
+
+
+```{r}
+
+# lijndiagram groeipercentages 
+
+plot <- lijnplot_leeg+
+  ggtitle("Figuur 3b Ontwikkeling leegstand per stadsdeel, 2018 tot 2022 (%)")
+
+fun_giraf(plot)
+
+
+```
+
+# Ontwikkelingen per wijk
+
+Hieronder is in de eerste figuur de leegstandstoename of afname per wijk weergegeven tussen 2021 en 2022 en in de tweede figuur de toe- of afname van het aantal winkels in het mode- en luxesegment. Wederom wordt duidelijk dat de gebieden in Centrum hard geraakt zijn, maar ook in Buitenveldert en in de winkelgebieden in Zuidoost. Het aantal modewinkels is juist toegenomen op de Zuidas en in het Oostelijk Havengebied.
+
+## leegstand in de wijk
+
+```{r}
+
+
+# kaart 
+
+plot <- kaart_leegstand +
+  ggtitle("Figuur 4a Ontwikkeling leegstand per wijk, 2018 tot 2022 (%)")
+
+fun_giraf(plot)
+
+
+```
+
+
+## mode en luxe in de wijk 
+
+
+```{r}
+
+
+# kaart 
+
+
+plot <- kaart_mode +
+  ggtitle("Figuur 4b Ontwikkeling verkooppunten mode en luxe per wijk, 2018 tot 2022 (%)")
+
+fun_giraf(plot)
+
+
+```
+
+
+# colofon
+
+Deze rapportage is gemaakt door<br>
+Rogier van der Groep<br>
+Onderzoek, Informatie en Statistiek<br>
+Gemeente Amsterdam<br>
+<rogier.van.der.groep@amsterdam.nl><br>
+Website [Data Amsterdam Detailhandel](https://onderzoek.amsterdam.nl/artikel/monitor-detailhandel).
+
